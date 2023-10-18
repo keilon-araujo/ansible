@@ -44,12 +44,14 @@
   gather_facts: no
   tasks:
   - name: Criar diretório local
+    become: true
     file:
       path: /root/Backup/FW/{{ date }}
       state: directory
     delegate_to: localhost
 
   - name: Mover arquivos do diretório antigo para o diretorio com data de hoje
+    become: true
     command:
      cmd: mv /tmp/Backup/ /root/Backup/FW/{{ date }}
     delegate_to: localhost
