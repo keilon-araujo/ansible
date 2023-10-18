@@ -1,0 +1,57 @@
+---
+
+- name: Backup pfSense configuration
+  hosts: pfsense
+  vars:
+    backup_path: "/tmp/"
+    backup_file: "config_backup"
+    date: "{{ lookup('pipe', 'date +%Y%m%d') }}"
+  become: true
+  tasks:
+
+  - name: Backup de Configuração do pfSense
+    become: yes
+    command: cp /cf/conf/config.xml "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+    args:
+      creates: "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+
+  - name: Baixando o Arquivo de Backup
+    fetch:
+      src: "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+      dest: "/tmp/Backup/"
+      flat: yes
+
+#  - name: Verificar data atual
+#    command:
+#      cmd: date '+%Y-%m-%d'
+#    register: current_date
+#    delegate_to: localhost
+
+#  - name: Criar novo diretório com data do dia
+#    file:
+#      path: /root/Backup/{{ date }}
+#      state: directory
+#    delegate_to: localhost
+
+#  - name: Mover arquivos do diretório antigo para o diretorio com data de hoje
+#    command:
+#      cmd: mv /tmp/Backup/* /root/Backup/{{ date }}
+
+- hosts: localhost
+  vars:
+    date: "{{ lookup('pipe', 'date +%Y%m%d') }}"
+  become: true
+  gather_facts: no
+  tasks:
+  - name: Criar diretório local
+    file:
+      path: /root/Backup/FW/{{ date }}
+      state: directory
+    delegate_to: localhost
+
+  - name: Mover arquivos do diretório antigo para o diretorio com data de hoje
+    command:
+     cmd: mv /tmp/Backup/ /root/Backup/FW/{{ date }}
+    delegate_to: localhost
+
+...
