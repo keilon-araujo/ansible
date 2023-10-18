@@ -6,6 +6,7 @@
     backup_path: "/tmp/"
     backup_file: "config_backup"
     date: "{{ lookup('pipe', 'date +%Y%m%d') }}"
+  become: true
   tasks:
 
   - name: Backup de Configuração do pfSense
