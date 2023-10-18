@@ -1,0 +1,22 @@
+---
+
+- name: Backup pfSense configuration
+  hosts: pfsense
+  vars:
+    backup_path: "/tmp/"
+    backup_file: "config_backup"
+    date: "{{ lookup('pipe', 'date +%Y%m%d') }}"
+  tasks:
+
+  - name: Backup de Configuração do pfSense
+    become: yes
+    command: cp /cf/conf/config.xml "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+    args:
+      creates: "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+
+  - name: Baixando o Arquivo de Backup
+    fetch:
+      src: "{{ backup_path }}/{{ backup_file }}_{{ ansible_hostname }}_{{ date }}.xml"
+      dest: "/tmp/"
+      flat: yes
+...
